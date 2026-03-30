@@ -1,0 +1,338 @@
+/* 기본 변수 세팅 */
+:root {
+    --bg-body: #ebfcf0;
+    /* 연한 초록색 배경 */
+    --bg-white: #ffffff;
+    --bg-green-light: #f0fdf4;
+    --border-green: #bbf7d0;
+    --border-green-light: #dcfce7;
+    --text-main: #111827;
+    --text-muted: #4b5563;
+    --text-light: #9ca3af;
+    --text-green: #16a34a;
+    --text-green-dark: #15803d;
+    --blue: #3b82f6;
+    --orange: #f97316;
+    --black: #18181b;
+}
+
+/* 초기화 및 공통 스타일 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    padding: 1.5rem;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+.app-container {
+    max-width: 1152px;
+    margin: 0 auto;
+}
+
+/* 유틸리티 클래스 */
+.mt-6 {
+    margin-top: 1.5rem;
+}
+
+.text-green-700 {
+    color: var(--text-green-dark);
+}
+
+.text-black {
+    color: var(--text-main);
+}
+
+.text-blue {
+    color: var(--blue);
+}
+
+.text-zinc {
+    color: var(--black);
+}
+
+.text-orange {
+    color: var(--orange);
+}
+
+/* 그리드 레이아웃 */
+.grid-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 공통 카드 스타일 */
+.card {
+    background-color: var(--bg-white);
+    border-radius: 1rem;
+    border: 1px solid var(--border-green);
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 640px) {
+    .card {
+        padding: 2rem;
+    }
+}
+
+/* 상단 네이버 트렌드 섹션 */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+/* 네이버 검색어 하위 분할 카드 */
+.sub-card {
+    background-color: rgba(240, 253, 244, 0.4);
+    border: 1px solid var(--border-green-light);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.trend-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.trend-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.trend-item:hover .keyword {
+    color: var(--text-green);
+}
+
+.rank {
+    color: var(--text-green);
+    font-weight: 700;
+    width: 1.5rem;
+    font-size: 1.125rem;
+    text-align: center;
+}
+
+.keyword {
+    color: #1f2937;
+    font-weight: 500;
+    transition: color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 뉴스 카드 */
+.news-card {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-green-light);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    height: 100%;
+}
+
+.news-card:hover {
+    border-color: #86efac;
+}
+
+.news-image-wrapper {
+    position: relative;
+    height: 12rem;
+    width: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.news-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.news-card:hover .news-image {
+    transform: scale(1.05);
+}
+
+.news-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background-color: var(--text-green);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.news-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.news-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.375;
+    transition: color 0.2s;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-card:hover .news-title {
+    color: var(--text-green-dark);
+}
+
+.news-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.625;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-meta {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* 소셜 미디어 트렌드 카드 */
+.social-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.social-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.5rem;
+}
+
+.icon-wrapper {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(249, 250, 251, 0.5);
+    border: 1px solid rgba(243, 244, 246, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-header h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.social-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.social-item .rank {
+    width: 1.25rem;
+    opacity: 0.8;
+    margin-top: 0.125rem;
+}
+
+.social-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.social-info .keyword {
+    color: #1f2937;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.social-item:hover .keyword {
+    color: var(--text-green);
+}
+
+.social-info .meta {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+/* Skeleton Loading Animation */
+.skeleton .skeleton-rank,
+.skeleton .skeleton-text {
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+    animation: shimmer 1.5s infinite linear alternate;
+}
+
+.skeleton-text {
+    height: 1.25rem;
+}
+
+.skeleton-rank {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+@keyframes shimmer {
+    0% {
+        background-color: #e5e7eb;
+    }
+
+    100% {
+        background-color: #d1d5db;
+    }
+}
