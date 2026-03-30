@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>트렌드 대시보드</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta http-equiv="refresh" content="300">
 </head>
 
 <body>
     <div class="app-container">
         <main class="main-content">
 
-            <!-- 상단 섹션: 네이버 트렌드 & 뉴스 -->
-            <section class="card naver-section">
+            <!-- 상단 섹션: 나무위키 트렌드 & 뉴스 -->
+            <section class="card namu-section">
                 <div class="section-header">
                     <svg class="icon text-green-700" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -22,13 +22,45 @@
                         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                         <polyline points="16 7 22 7 22 13"></polyline>
                     </svg>
-                    <h2 class="text-green-700">네이버 실시간 검색어 Top 10</h2>
+                    <h2 class="text-green-700">나무위키 실시간 검색어 Top 10</h2>
+                </div>
+                <div>
+                    <div class="update-container">
+                        <button class="refresh-btn" onclick="handleRefresh()">새로고침</button>
+
+                        <p class="time-display">
+                            마지막 업데이트 : <span id="lastUpdateTime">-</span>
+                        </p>
+                    </div>
+
+                    <script>
+                        // A. 페이지가 로드되자마자 실행되는 함수
+                        window.onload = function () {
+                            const now = new Date();
+
+                            // 시, 분, 초를 두 자리 숫자로 맞춤 (예: 09:05:01)
+                            const hours = String(now.getHours()).padStart(2, '0');
+                            const minutes = String(now.getMinutes()).padStart(2, '0');
+                            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                            const timeString = `${hours}:${minutes}:${seconds}`;
+
+                            // 화면에 시간 표시
+                            document.getElementById('lastUpdateTime').textContent = timeString;
+                        };
+
+                        // B. 버튼 클릭 시 실행되는 함수
+                        function handleRefresh() {
+                            // 브라우저 페이지 새로고침
+                            location.reload();
+                        }
+                    </script>
                 </div>
 
                 <div class="grid-3">
                     <!-- 1~5위 카드 -->
                     <div class="sub-card">
-                        <ul class="trend-list" id="naver-trend-list-1">
+                        <ul class="trend-list" id="namu-trend-list-1">
                             <li class="trend-item skeleton">
                                 <div class="skeleton-rank"></div>
                                 <div class="skeleton-text"></div>
@@ -54,7 +86,7 @@
 
                     <!-- 6~10위 카드 -->
                     <div class="sub-card">
-                        <ul class="trend-list" id="naver-trend-list-2">
+                        <ul class="trend-list" id="namu-trend-list-2">
                             <li class="trend-item skeleton">
                                 <div class="skeleton-rank"></div>
                                 <div class="skeleton-text" style="width: 75%;"></div>
@@ -114,26 +146,26 @@
                         </div>
                         <h2 class="text-black">X 트렌드</h2>
                     </div>
-                    <ul class="trend-list">
-                        <li class="social-item"><span class="rank text-blue">1</span>
-                            <div class="social-info"><span class="keyword">#프론트엔드</span><span class="meta">12.4K
-                                    posts</span></div>
+                    <ul class="trend-list" id="x-trend-list">
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-blue">2</span>
-                            <div class="social-info"><span class="keyword">리액트 19</span><span class="meta">8,230
-                                    posts</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:70%"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-blue">3</span>
-                            <div class="social-info"><span class="keyword">#개발자일상</span><span class="meta">5,120
-                                    posts</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:85%"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-blue">4</span>
-                            <div class="social-info"><span class="keyword">퇴근길 만원</span><span class="meta">3,400
-                                    posts</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:60%"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-blue">5</span>
-                            <div class="social-info"><span class="keyword">저녁메뉴 추천</span><span
-                                    class="meta">Trending</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:75%"></div>
                         </li>
                     </ul>
                 </div>
@@ -151,26 +183,26 @@
                         </div>
                         <h2 class="text-black">Threads 트렌드</h2>
                     </div>
-                    <ul class="trend-list">
-                        <li class="social-item"><span class="rank text-zinc">1</span>
-                            <div class="social-info"><span class="keyword">오늘 날씨 미쳤다</span><span class="meta">2,041
-                                    replies</span></div>
+                    <ul class="trend-list" id="threads-trend-list">
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-zinc">2</span>
-                            <div class="social-info"><span class="keyword">스레드 시작</span><span class="meta">1,520
-                                    replies</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:65%"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-zinc">3</span>
-                            <div class="social-info"><span class="keyword">일상 기록용</span><span class="meta">980
-                                    replies</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:80%"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-zinc">4</span>
-                            <div class="social-info"><span class="keyword">오운완</span><span class="meta">840
-                                    replies</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:55%"></div>
                         </li>
-                        <li class="social-item"><span class="rank text-zinc">5</span>
-                            <div class="social-info"><span class="keyword">성수동 맛집</span><span class="meta">650
-                                    replies</span></div>
+                        <li class="trend-item skeleton">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-text" style="width:70%"></div>
                         </li>
                     </ul>
                 </div>
@@ -214,7 +246,8 @@
             </section>
         </main>
     </div>
-    <script src="API_key.js"></script>
+    <script src="namu_api.js"></script>
+    <script src="social_api.js"></script>
 </body>
 
 </html>
