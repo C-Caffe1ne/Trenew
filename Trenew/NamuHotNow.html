@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나무위키 실시간 검색어 — Namu Hot Now</title>
+    <meta name="description" content="나무위키 실시간 검색어와 실검챈 데이터를 실시간으로 확인하세요.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="namuhotnow.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="namu-body">
+    <div class="app-container">
+
+        <!-- 헤더 -->
+        <header class="namu-hero" id="namuHero">
+            <div class="hero-glow"></div>
+            <div class="hero-content">
+                <div class="hero-icon-row">
+                    <div class="hero-icon-circle pulse">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                            <polyline points="16 7 22 7 22 13"></polyline>
+                        </svg>
+                    </div>
+                    <span class="hero-live-badge">
+                        <span class="live-dot"></span>LIVE
+                    </span>
+                </div>
+                <h1 class="hero-title">나무위키 실시간 검색어</h1>
+                <p class="hero-subtitle">실검챈 데이터와 연동하여 '이게 왜 실검?' 에 답합니다</p>
+                <div class="hero-meta">
+                    <span id="lastUpdated">업데이트 중...</span>
+                    <button class="refresh-btn" id="refreshBtn" title="새로고침">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content namu-main">
+
+            <!-- 실시간 검색어 TOP 10 -->
+            <section class="namu-ranking-section" id="rankingSection">
+                <div class="ranking-grid" id="rankingGrid">
+                    <!-- JS에서 동적 생성 -->
+                </div>
+            </section>
+
+            <!-- 하단 2컬럼: 실검챈 최신글 + 통계 -->
+            <section class="namu-bottom-grid">
+
+                <!-- 실검챈 최신글 -->
+                <div class="card namu-card arca-feed-card">
+                    <div class="namu-card-header">
+                        <div class="namu-card-icon arca-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2>실검챈 최신글</h2>
+                            <span class="namu-card-sub">arca.live/b/namuhotnow</span>
+                        </div>
+                    </div>
+                    <ul class="arca-feed-list" id="arcaFeedList">
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                        <li class="arca-feed-skeleton"></li>
+                    </ul>
+                </div>
+
+                <!-- 카테고리 분포 -->
+                <div class="card namu-card stats-card">
+                    <div class="namu-card-header">
+                        <div class="namu-card-icon stats-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M18 20V10"></path>
+                                <path d="M12 20V4"></path>
+                                <path d="M6 20v-6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2>카테고리 분포</h2>
+                            <span class="namu-card-sub">실검챈 게시물 카테고리 현황</span>
+                        </div>
+                    </div>
+                    <div class="stats-content" id="statsContent">
+                        <div class="stats-skeleton"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 푸터 -->
+        <footer class="namu-footer">
+            <p>Powered by <a href="https://arca.live/b/namuhotnow" target="_blank">실검챈</a> · <a
+                    href="https://greasyfork.org/scripts/486316" target="_blank">Namu Hot Now Script v0.9.7.1</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // ──────────────────────────────────────
+        // 데이터 & 상태
+        // ──────────────────────────────────────
+        let namuRankings = [];
+        let arcaPairs = [];
+        let splittedPairs = [];
+
+        const RANK_EMOJIS = ['🥇', '🥈', '🥉', '4', '5', '6', '7', '8', '9', '10'];
+        const CATEGORY_COLORS = {
+            '이왜실?': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' },
+            '연예': { bg: '#fef3c7', text: '#d97706', border: '#fde68a' },
+            '스포츠': { bg: '#dbeafe', text: '#2563eb', border: '#bfdbfe' },
+            '정치': { bg: '#fce7f3', text: '#db2777', border: '#fbcfe8' },
+            '인방': { bg: '#ede9fe', text: '#7c3aed', border: '#ddd6fe' },
+            '사건사고': { bg: '#fee2e2', text: '#dc2626', border: '#fecaca' },
+            '게임': { bg: '#cffafe', text: '#0891b2', border: '#a5f3fc' },
+            '유튜브': { bg: '#ffe4e6', text: '#e11d48', border: '#fecdd3' },
+            '❗️공지': { bg: '#fef9c3', text: '#a16207', border: '#fef08a' },
+        };
+
+        function getCategoryColor(category) {
+            return CATEGORY_COLORS[category] || { bg: '#f3f4f6', text: '#4b5563', border: '#e5e7eb' };
+        }
+
+        // ──────────────────────────────────────
+        // API 호출
+        // ──────────────────────────────────────
+
+        // 나무위키 실시간 검색어
+        async function fetchNamuRanking() {
+            try {
+                const res = await fetch('https://search.namu.wiki/api/ranking', { cache: 'no-store' });
+                const data = await res.json();
+                namuRankings = data.slice(0, 10).map(item => item.trim());
+                return namuRankings;
+            } catch (e) {
+                console.error('나무위키 랭킹 API 오류:', e);
+                return [];
+            }
+        }
+
+        // 아카라이브 실검챈 API (CORS proxy 사용)
+        async function fetchArcaData(before = null, limit = 50) {
+            try {
+                let url = `https://arca.live/b/namuhotnow?mode=best&p=1`;
+                if (before) {
+                    url = `https://arca.live/b/namuhotnow?mode=best&p=2`;
+                }
+
+                // JSON API fallback: 직접 HTML 파싱 대신 간단한 방법 시도
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                const res = await fetch(proxyUrl, { cache: 'no-store' });
+                const html = await res.text();
+
+                // HTML 파싱
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const rows = doc.querySelectorAll('.vrow.column');
+                const articles = [];
+
+                rows.forEach(row => {
+                    const titleEl = row.querySelector('.col-title .title');
+                    const badgeEl = row.querySelector('.col-title .badges .badge');
+                    const linkEl = row.querySelector('a.vrow');
+                    const timeEl = row.querySelector('.col-time time');
+
+                    if (titleEl && linkEl) {
+                        const title = titleEl.textContent.trim();
+                        const badge = badgeEl ? badgeEl.textContent.trim() : '이왜실?';
+                        const link = linkEl.getAttribute('href') || '';
+                        const time = timeEl ? timeEl.getAttribute('datetime') || timeEl.textContent.trim() : '';
+
+                        if (title && !title.includes('공지')) {
+                            articles.push({ title, badge, link, time });
+                        }
+                    }
+                });
+
+                return articles;
+            } catch (e) {
+                console.error('아카라이브 API 오류:', e);
+                return [];
+            }
+        }
+
+        // pairs 업데이트
+        async function updatePairs() {
+            try {
+                arcaPairs = [];
+                splittedPairs = [];
+
+                const articles = await fetchArcaData();
+                const moreArticles = await fetchArcaData(true);
+
+                const allArticles = [...articles, ...moreArticles];
+                const seen = new Set();
+
+                allArticles.forEach(article => {
+                    if (!seen.has(article.link)) {
+                        seen.add(article.link);
+                        arcaPairs.push({
+                            text: article.title,
+                            link: article.link,
+                            badges: article.badge,
+                            time: article.time
+                        });
+                    }
+                });
+
+                // splittedPairs 만들기
+                arcaPairs.forEach(pair => {
+                    let content = pair.text;
+                    const pattern = /^(.+)\)\s(.+)$/;
+                    const match = content.match(pattern);
+                    if (match) content = match[2];
+
+                    content.split(',').map(s => s.trim()).forEach(item => {
+                        if (item) {
+                            splittedPairs.push({
+                                text: item,
+                                link: pair.link,
+                                badges: pair.badges,
+                                time: pair.time
+                            });
+                        }
+                    });
+                });
+
+            } catch (e) {
+                console.error('updatePairs 오류:', e);
+            }
+        }
+
+        // 키워드 매칭
+        function findLinkByPartialMatch(keyword) {
+            // 정확히 일치
+            for (const pair of splittedPairs) {
+                if (pair.text.toLowerCase() === keyword.toLowerCase()) {
+                    return { link: pair.link, badges: pair.badges };
+                }
+            }
+            // 부분 일치
+            for (const pair of arcaPairs) {
+                if (pair.text.toLowerCase().includes(keyword.toLowerCase())) {
+                    return { link: pair.link, badges: pair.badges };
+                }
+            }
+            return { link: null, badges: null };
+        }
+
+        // ──────────────────────────────────────
+        // UI 렌더링
+        // ──────────────────────────────────────
+
+        function renderRanking() {
+            const grid = document.getElementById('rankingGrid');
+            grid.innerHTML = '';
+
+            namuRankings.forEach((keyword, idx) => {
+                const match = findLinkByPartialMatch(keyword);
+                const catColor = getCategoryColor(match.badges);
+                const isTop3 = idx < 3;
+
+                const card = document.createElement('div');
+                card.className = `ranking-card ${isTop3 ? 'ranking-top' : ''} fade-in`;
+                card.style.animationDelay = `${idx * 60}ms`;
+
+                const rankLabel = isTop3
+                    ? `<span class="ranking-emoji">${RANK_EMOJIS[idx]}</span>`
+                    : `<span class="ranking-number">${idx + 1}</span>`;
+
+                const badgeHtml = match.badges
+                    ? `<a href="https://arca.live${match.link}" target="_blank" class="ranking-badge" style="background:${catColor.bg}; color:${catColor.text}; border: 1px solid ${catColor.border};">${match.badges}</a>`
+                    : '';
+
+                card.innerHTML = `
+                    <div class="ranking-left">
+                        ${rankLabel}
+                        <a href="https://namu.wiki/Go?q=${encodeURIComponent(keyword)}" target="_blank" class="ranking-keyword">${keyword}</a>
+                    </div>
+                    <div class="ranking-right">
+                        ${badgeHtml}
+                        <a href="https://namu.wiki/Go?q=${encodeURIComponent(keyword)}" target="_blank" class="ranking-arrow" title="나무위키에서 검색">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            // 검색어 데이터 없을 때
+            if (namuRankings.length === 0) {
+                grid.innerHTML = `
+                    <div class="ranking-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                        <p>실시간 검색어를 불러올 수 없습니다</p>
+                        <button class="retry-btn" onclick="initFetch()">다시 시도</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderArcaFeed() {
+            const list = document.getElementById('arcaFeedList');
+            list.innerHTML = '';
+
+            const items = arcaPairs.slice(0, 15);
+
+            if (items.length === 0) {
+                list.innerHTML = `<li class="arca-feed-empty">실검챈 데이터를 불러올 수 없습니다</li>`;
+                return;
+            }
+
+            items.forEach((pair, idx) => {
+                const catColor = getCategoryColor(pair.badges);
+                const li = document.createElement('li');
+                li.className = 'arca-feed-item fade-in';
+                li.style.animationDelay = `${idx * 40}ms`;
+
+                li.innerHTML = `
+                    <span class="arca-feed-badge" style="background:${catColor.bg}; color:${catColor.text}; border: 1px solid ${catColor.border};">${pair.badges}</span>
+                    <a href="https://arca.live${pair.link}" target="_blank" class="arca-feed-title">${pair.text}</a>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function renderStats() {
+            const container = document.getElementById('statsContent');
+            const categoryCount = {};
+
+            arcaPairs.forEach(pair => {
+                const cat = pair.badges || '이왜실?';
+                categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+            });
+
+            const sorted = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]);
+            const max = sorted.length > 0 ? sorted[0][1] : 1;
+
+            if (sorted.length === 0) {
+                container.innerHTML = `<div class="stats-empty">데이터 없음</div>`;
+                return;
+            }
+
+            let html = '<div class="stats-bars">';
+            sorted.forEach(([cat, count], idx) => {
+                const catColor = getCategoryColor(cat);
+                const pct = Math.round((count / max) * 100);
+                html += `
+                    <div class="stats-bar-row fade-in" style="animation-delay: ${idx * 60}ms">
+                        <div class="stats-bar-label">
+                            <span class="stats-cat-badge" style="background:${catColor.bg}; color:${catColor.text}; border: 1px solid ${catColor.border};">${cat}</span>
+                            <span class="stats-count">${count}건</span>
+                        </div>
+                        <div class="stats-bar-track">
+                            <div class="stats-bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, ${catColor.text}44, ${catColor.text}aa);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 총 게시물 수
+            const total = arcaPairs.length;
+            html += `</div>`;
+            html += `<div class="stats-total"><span>총 ${total}건</span>의 실검챈 게시물 분석</div>`;
+            container.innerHTML = html;
+        }
+
+        // ──────────────────────────────────────
+        // 초기화 & 이벤트
+        // ──────────────────────────────────────
+
+        async function initFetch() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.classList.add('spinning');
+
+            try {
+                await Promise.all([fetchNamuRanking(), updatePairs()]);
+                renderRanking();
+                renderArcaFeed();
+                renderStats();
+
+                const now = new Date();
+                document.getElementById('lastUpdated').textContent =
+                    `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} 업데이트`;
+            } catch (e) {
+                console.error('초기화 오류:', e);
+            } finally {
+                refreshBtn.classList.remove('spinning');
+            }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', initFetch);
+
+        // 페이지 로드 시 실행
+        initFetch();
+
+        // 60초마다 자동 갱신
+        setInterval(initFetch, 60000);
+    </script>
+</body>
+
+</html>

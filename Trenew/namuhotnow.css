@@ -1,0 +1,568 @@
+/* ─────────────── 변수 ─────────────── */
+:root {
+    --namu-bg: #f8fafc;
+    --namu-card-bg: #ffffff;
+    --namu-primary: #00A495; /* 나무위키 시그니처 컬러 변형 */
+    --namu-primary-light: #ccfbf1;
+    --namu-primary-dark: #0f766e;
+    --namu-text-main: #0f172a;
+    --namu-text-muted: #64748b;
+    --namu-border: #e2e8f0;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+}
+
+/* ─────────────── 공통 & 레이아웃 ─────────────── */
+body.namu-body {
+    background-color: var(--namu-bg);
+    color: var(--namu-text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ─────────────── 히어로 영역 ─────────────── */
+.namu-hero {
+    position: relative;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.hero-glow {
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 70%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(0, 164, 149, 0.3) 0%, rgba(0,0,0,0) 70%);
+    transform: rotate(30deg);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.hero-icon-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-icon-circle {
+    background-color: var(--namu-primary);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 164, 149, 0.5);
+}
+
+.hero-live-badge {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(4px);
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.025em;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    margin: 0 0 2rem 0;
+    font-weight: 400;
+}
+
+.hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.refresh-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.refresh-btn:hover {
+    color: var(--namu-primary-light);
+}
+
+.refresh-btn.spinning svg {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* ─────────────── 랭킹 섹션 (Top 10) ─────────────── */
+.namu-ranking-section {
+    margin-bottom: 3rem;
+}
+
+.ranking-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .ranking-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.ranking-card {
+    background-color: var(--namu-card-bg);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--namu-border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.ranking-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background-color: var(--namu-border);
+    transition: background-color 0.3s;
+}
+
+.ranking-card:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--shadow-md);
+    border-color: #cbd5e1;
+}
+
+.ranking-card:hover::before {
+    background-color: var(--namu-primary);
+}
+
+/* 상위 3개 카드 특수 스타일 */
+.ranking-card.ranking-top {
+    background: linear-gradient(to right, #ffffff, #f8fafc);
+}
+
+.ranking-card.ranking-top:nth-child(1)::before { background-color: #fbbf24; }
+.ranking-card.ranking-top:nth-child(2)::before { background-color: #94a3b8; }
+.ranking-card.ranking-top:nth-child(3)::before { background-color: #b45309; }
+
+.ranking-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.ranking-number {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--namu-text-muted);
+    width: 2rem;
+    text-align: center;
+}
+
+.ranking-emoji {
+    font-size: 1.5rem;
+    width: 2rem;
+    text-align: center;
+    line-height: 1;
+}
+
+.ranking-keyword {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--namu-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+}
+
+.ranking-keyword:hover {
+    color: var(--namu-primary-dark);
+}
+
+.ranking-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.ranking-badge {
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: filter 0.2s;
+}
+
+.ranking-badge:hover {
+    filter: brightness(0.95);
+}
+
+.ranking-arrow {
+    color: var(--namu-text-muted);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.ranking-card:hover .ranking-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--namu-primary);
+}
+
+/* ─────────────── 하단 2컬럼 레이아웃 ─────────────── */
+.namu-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .namu-bottom-grid {
+        grid-template-columns: 3fr 2fr;
+    }
+}
+
+.namu-card {
+    background-color: var(--namu-card-bg);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--namu-border);
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.namu-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.namu-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arca-icon {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+.stats-icon {
+    background-color: #fdf4ff;
+    color: #c026d3;
+}
+
+.namu-card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.namu-card-sub {
+    font-size: 0.85rem;
+    color: var(--namu-text-muted);
+}
+
+/* 실검챈 피드 리스트 */
+.arca-feed-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    max-height: 400px;
+    padding-right: 0.5rem;
+}
+
+/* 스크롤바 스타일링 */
+.arca-feed-list::-webkit-scrollbar {
+    width: 6px;
+}
+.arca-feed-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.arca-feed-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.arca-feed-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background-color: #f8fafc;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.arca-feed-item:hover {
+    background-color: #f1f5f9;
+    transform: translateX(4px);
+}
+
+.arca-feed-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.arca-feed-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--namu-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 통계 (가로 막대 그래프) */
+.stats-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.stats-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stats-bar-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.stats-cat-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.stats-count {
+    color: var(--namu-text-muted);
+}
+
+.stats-bar-track {
+    height: 8px;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stats-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transform-origin: left;
+    animation: bar-grow 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes bar-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+.stats-total {
+    margin-top: auto;
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--namu-border);
+    font-size: 0.95rem;
+    color: var(--namu-text-muted);
+}
+
+.stats-total span {
+    font-weight: 700;
+    color: var(--namu-text-main);
+}
+
+/* ─────────────── 애니메이션 / 스켈레톤 ─────────────── */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.ranking-empty, .arca-feed-empty, .stats-empty {
+    padding: 3rem;
+    text-align: center;
+    color: var(--namu-text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    justify-content: center;
+}
+
+.retry-btn {
+    background-color: var(--namu-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+    background-color: var(--namu-primary-dark);
+}
+
+.arca-feed-skeleton {
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.stats-skeleton {
+    height: 200px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ─────────────── 푸터 ─────────────── */
+.namu-footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--namu-text-muted);
+    font-size: 0.9rem;
+}
+
+.namu-footer a {
+    color: var(--namu-primary-dark);
+    font-weight: 500;
+}
+
+.namu-footer a:hover {
+    text-decoration: underline;
+}
