@@ -43,7 +43,8 @@ body {
 }
 
 .text-green-700 {
-    color: var(--text-green-dark);
+    text-align: center;
+    color: var(--text-dark);
 }
 
 .text-black {
@@ -112,13 +113,20 @@ body {
 
 /* 네이버 검색어 하위 분할 카드 */
 .sub-card {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    width: fill;
+    height: fit-content;
     background-color: rgba(240, 253, 244, 0.4);
     border: 1px solid var(--border-green-light);
     border-radius: 0.75rem;
-    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 16px;
+    text-align: center;
+
+
 }
 
 .trend-list {
@@ -350,4 +358,22 @@ body {
     font-size: 1rem;
     font-weight: 500;
     color: blue;
+}
+
+.namuNow {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+}
+
+.update-container {
+    gap: 24px;
+    padding-bottom: 16px;
+
+}
+
+.nowIssue {
+    text-align: top;
+    padding-top: 0;
+    padding-bottom: 36px;
 }

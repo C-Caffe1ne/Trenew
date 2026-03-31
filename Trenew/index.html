@@ -16,21 +16,18 @@
             <!-- 상단 섹션: 나무위키 트렌드 & 뉴스 -->
             <section class="card namu-section">
                 <div class="section-header">
-                    <svg class="icon text-green-700" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                        <polyline points="16 7 22 7 22 13"></polyline>
-                    </svg>
-                    <h2 class="text-green-700">나무위키 실시간 검색어 Top 10</h2>
+                    <a href="https://namu.wiki/"><img src="./img/namuWiki.png" width="50%" height="50%"></a>
                 </div>
                 <div>
                     <div class="update-container">
                         <button class="refresh-btn" onclick="handleRefresh()">새로고침</button>
-
+                        <br><br>
                         <p class="time-display">
-                            마지막 업데이트 : <span id="lastUpdateTime">-</span>
+                            마지막 업데이트 : (UTC+09:00) <span id="lastUpdateTime">-</span>
                         </p>
+                        <br>
+                        <a href="https://arca.live/b/namuhotnow" target="_blank" class="namuNow">
+                            <img src="./img/Namuissue.png" width="24" height="24"> 나무위키 실검 알려주는 채널</a>
                     </div>
 
                     <script>
@@ -60,6 +57,7 @@
                 <div class="grid-3">
                     <!-- 1~5위 카드 -->
                     <div class="sub-card">
+                        <h3 class="nowIssue">실시간 검색어</h3>
                         <ul class="trend-list" id="namu-trend-list-1">
                             <li class="trend-item skeleton">
                                 <div class="skeleton-rank"></div>
@@ -82,10 +80,6 @@
                                 <div class="skeleton-text" style="width: 90%;"></div>
                             </li>
                         </ul>
-                    </div>
-
-                    <!-- 6~10위 카드 -->
-                    <div class="sub-card">
                         <ul class="trend-list" id="namu-trend-list-2">
                             <li class="trend-item skeleton">
                                 <div class="skeleton-rank"></div>
