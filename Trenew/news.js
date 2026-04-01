@@ -1,56 +1,88 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// 1. Supabase 접속 정보 (프로젝트 설정에 맞게 수정)
 const SUPABASE_URL = 'https://zjxpmtmuzfjfvswghtbq.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_rW3HB8JZHzWsAw__146jxA_rP28BuN6'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqeHBtdG11emZqZnZzd2dodGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1OTIzMTUsImV4cCI6MjA5MDE2ODMxNX0.4LPWUg-m11NayTxQtg_j90iQ7iuKdrXlzwcu6x-y_3o'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 async function renderCardNews() {
-    // 카드를 감싸는 부모 컨테이너 (HTML에 <div id="news-wrapper"></div>가 있다고 가정)
-    const wrapper = document.getElementById('news-wrapper');
+    const wrapper = document.getElementById('news-wrapper')
+    if (!wrapper) return
 
     try {
-        // 2. 데이터 가져오기 (최신순 10개)
         const { data: newsItems, error } = await supabase
             .from('news_articles')
             .select('*')
-            .limit(10);
+            .order('pub_date', { ascending: false })
+            .limit(10)
 
-        if (error) throw error;
+        if (error) throw error
 
-        // 3. 사용자가 제공한 클래스 구조에 맞게 HTML 생성
-        const htmlContent = newsItems.map(item => {
-            // 카테고리 배열이 비어있을 경우를 대비한 처리
+        // 캐러셀 구조 생성
+        wrapper.innerHTML = `
+            <div class="news-carousel">
+                <button class="carousel-btn carousel-btn-left" onclick="moveCarousel(-1)">&#8249;</button>
+                <div class="carousel-track-wrapper">
+                    <div class="carousel-track" id="carousel-track">
+                        ${newsItems.map(item => {
             const displayCategory = (item.category && item.category.length > 0)
-                ? item.category[0]
-                : '일반';
-
+                ? item.category[0] : '일반'
             return `
-                <div class="card-news-container">
-                    <div class="news-image-wrapper">
-                        <img src="${item.image_url || 'https://via.placeholder.com/1080'}" 
-                             alt="${item.title}" class="news-image">
-                        <div class="news-badge">${displayCategory}</div>
-                    </div>
-                    <div class="news-content">
-                        <div>
-                            <h3 class="news-title">${item.title}</h3>
-                            <p class="news-desc">${item.description}</p>
-                        </div>
-                        <div class="news-meta">${item.pubDate}</div>
+                                <div class="card-news-container" onclick="window.open('${item.link}', '_blank')" style="cursor:pointer;">
+                                    <div class="news-image-wrapper">
+                                        <img src="${item.image_url || 'https://via.placeholder.com/1080'}"
+                                             alt="${item.title}" class="news-image">
+                                        <div class="news-badge">${displayCategory}</div>
+                                    </div>
+                                    <div class="news-content">
+                                        <div>
+                                            <h3 class="news-title clamp-2">${item.title}</h3>
+                                            <p class="news-desc clamp-2">${item.description || ''}</p>
+                                        </div>
+                                        <div class="news-meta">${item.pub_date}</div>
+                                    </div>
+                                </div>
+                            `
+        }).join('')}
                     </div>
                 </div>
-            `;
-        }).join('');
+                <button class="carousel-btn carousel-btn-right" onclick="moveCarousel(1)">&#8250;</button>
+            </div>
+            <div class="carousel-dots" id="carousel-dots">
+                ${newsItems.map((_, i) => `
+                    <span class="dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></span>
+                `).join('')}
+            </div>
+        `
 
-        // 4. 화면에 결과물 삽입
-        wrapper.innerHTML = htmlContent;
+        // 캐러셀 초기화
+        window._carouselIndex = 0
+        window._carouselTotal = newsItems.length
 
-    } catch (error) {
-        console.error('데이터 로딩 에러:', error.message);
+    } catch (err) {
+        console.error('뉴스 로딩 실패:', err.message)
+        wrapper.innerHTML = '<p>뉴스를 불러오지 못했습니다.</p>'
     }
 }
 
-// 함수 실행
-renderCardNews();
+window.moveCarousel = function (direction) {
+    const total = window._carouselTotal
+    window._carouselIndex = (window._carouselIndex + direction + total) % total
+    updateCarousel()
+}
+
+window.goToSlide = function (index) {
+    window._carouselIndex = index
+    updateCarousel()
+}
+
+function updateCarousel() {
+    const track = document.getElementById('carousel-track')
+    const dots = document.querySelectorAll('.dot')
+    const index = window._carouselIndex
+
+    track.style.transform = `translateX(-${index * 100}%)`
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === index))
+}
+
+renderCardNews()
