@@ -54,54 +54,57 @@
                     </script>
                 </div>
 
-                <div class="grid-3">
+                <div class="grid-2">
                     <!-- 1~5위 카드 -->
                     <div class="sub-card">
                         <h3 class="nowIssue">실시간 검색어</h3>
-                        <ul class="trend-list" id="namu-trend-list-1">
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 70%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 85%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 60%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 90%;"></div>
-                            </li>
-                        </ul>
-                        <ul class="trend-list" id="namu-trend-list-2">
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 75%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 65%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 80%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 55%;"></div>
-                            </li>
-                            <li class="trend-item skeleton">
-                                <div class="skeleton-rank"></div>
-                                <div class="skeleton-text" style="width: 70%;"></div>
-                            </li>
-                        </ul>
+                        <div class="trend-lists-wrapper"
+                            style="display: flex; gap: 1rem; justify-content: space-around; padding: 0 1rem;">
+                            <ul class="trend-list" id="namu-trend-list-1" style="flex: 1; padding: 0;">
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 70%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 85%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 60%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 90%;"></div>
+                                </li>
+                            </ul>
+                            <ul class="trend-list" id="namu-trend-list-2" style="flex: 1; padding: 0;">
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 75%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 65%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 80%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 55%;"></div>
+                                </li>
+                                <li class="trend-item skeleton">
+                                    <div class="skeleton-rank"></div>
+                                    <div class="skeleton-text" style="width: 70%;"></div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <!-- IT/과학 뉴스 카드 -->
@@ -124,7 +127,7 @@
             </section>
 
             <!-- 하단 섹션: 소셜 미디어 트렌드 -->
-            <section class="grid-3 mt-6">
+            <section class="grid-2 mt-6">
 
                 <!-- X 트렌드 -->
                 <div class="card social-card">
@@ -164,75 +167,57 @@
                     </ul>
                 </div>
 
-                <!-- Threads 트렌드 -->
-                <div class="card social-card">
-                    <div class="social-header text-zinc">
-                        <div class="icon-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBdox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="4"></circle>
-                                <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-black">Threads 트렌드</h2>
-                    </div>
-                    <ul class="trend-list" id="threads-trend-list">
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:65%"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:80%"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:55%"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:70%"></div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Reddit 트렌드 -->
-                <div class="card social-card">
-                    <div class="social-header text-orange">
-                        <div class="icon-wrapper">
+                <!-- YouTube 트렌드 -->
+                <div class="card social-card" style="flex: 1;">
+                    <div class="social-header text-red">
+                        <div class="icon-wrapper" style="color: #FF0000; fill: #FF0000;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                fill="currentColor">
+                                <path d="M21.582 6.186a2.766 2.766 0 0 0-1.946-1.954C17.917 3.75 12 3.75 12 3.75s-5.918 0-7.636.482a2.766 2.766 0 0 0-1.946 1.954C2 7.915 2 12 2 12s0 4.085.418 5.814a2.766 2.766 0 0 0 1.946 1.954C6.082 20.25 12 20.25 12 20.25s5.918 0 7.636-.482a2.766 2.766 0 0 0 1.946-1.954C22 16.085 22 12 22 12s0-4.085-.418-5.814zM9.75 15.021V8.979L15.5 12l-5.75 3.021z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-black">Reddit 트렌드</h2>
+                        <h2 class="text-black">YouTube 인기</h2>
                     </div>
-                    <ul class="trend-list">
-                        <li class="social-item"><span class="rank text-orange">1</span>
-                            <div class="social-info"><span class="keyword">r/reactjs - New hook proposal</span><span
-                                    class="meta">↑ 4.2k upvotes</span></div>
+                    <ul class="trend-list" id="youtube-trend-list">
+                        <li class="trend-item skeleton" style="height: 50px;">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-image" style="width: 80px; height: 45px; background: #e5e7eb; border-radius: 4px; animation: shimmer 1.5s infinite linear alternate;"></div>
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="skeleton-text" style="width:90%"></div>
+                                <div class="skeleton-text" style="width:60%; height: 10px;"></div>
+                            </div>
                         </li>
-                        <li class="social-item"><span class="rank text-orange">2</span>
-                            <div class="social-info"><span class="keyword">r/webdev - Tailwind vs CSS</span><span
-                                    class="meta">↑ 3.8k upvotes</span></div>
+                        <li class="trend-item skeleton" style="height: 50px;">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-image" style="width: 80px; height: 45px; background: #e5e7eb; border-radius: 4px; animation: shimmer 1.5s infinite linear alternate;"></div>
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="skeleton-text" style="width:85%"></div>
+                                <div class="skeleton-text" style="width:50%; height: 10px;"></div>
+                            </div>
                         </li>
-                        <li class="social-item"><span class="rank text-orange">3</span>
-                            <div class="social-info"><span class="keyword">r/programming - AI replacing us?</span><span
-                                    class="meta">↑ 2.9k upvotes</span></div>
+                        <li class="trend-item skeleton" style="height: 50px;">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-image" style="width: 80px; height: 45px; background: #e5e7eb; border-radius: 4px; animation: shimmer 1.5s infinite linear alternate;"></div>
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="skeleton-text" style="width:75%"></div>
+                                <div class="skeleton-text" style="width:55%; height: 10px;"></div>
+                            </div>
                         </li>
-                        <li class="social-item"><span class="rank text-orange">4</span>
-                            <div class="social-info"><span class="keyword">r/technology - Battery
-                                    breakthrough</span><span class="meta">↑ 2.1k upvotes</span></div>
+                        <li class="trend-item skeleton" style="height: 50px;">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-image" style="width: 80px; height: 45px; background: #e5e7eb; border-radius: 4px; animation: shimmer 1.5s infinite linear alternate;"></div>
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="skeleton-text" style="width:80%"></div>
+                                <div class="skeleton-text" style="width:40%; height: 10px;"></div>
+                            </div>
                         </li>
-                        <li class="social-item"><span class="rank text-orange">5</span>
-                            <div class="social-info"><span class="keyword">r/design - UI trends in 2026</span><span
-                                    class="meta">↑ 1.5k upvotes</span></div>
+                        <li class="trend-item skeleton" style="height: 50px;">
+                            <div class="skeleton-rank"></div>
+                            <div class="skeleton-image" style="width: 80px; height: 45px; background: #e5e7eb; border-radius: 4px; animation: shimmer 1.5s infinite linear alternate;"></div>
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                <div class="skeleton-text" style="width:70%"></div>
+                                <div class="skeleton-text" style="width:65%; height: 10px;"></div>
+                            </div>
                         </li>
                     </ul>
                 </div>

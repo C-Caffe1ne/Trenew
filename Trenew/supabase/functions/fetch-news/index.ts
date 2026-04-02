@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
     console.log('1단계: newsdata.io API 호출 시작')
     const API_KEY = 'pub_ec7ecaf240684a2cb0c91ae496c6b24e'
     const response = await fetch(
-      `https://newsdata.io/api/1/latest?apikey=${API_KEY}&country=kr&language=ko&timezone=asia/seoul&image=1`
+      `https://newsdata.io/api/1/latest?apikey=${API_KEY}&country=kr&language=ko&category=world,crime,technology,sports,politics&timezone=asia/seoul&image=1`
     )
     console.log('API 응답 상태:', response.status)
 

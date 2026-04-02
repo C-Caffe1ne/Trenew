@@ -2,7 +2,7 @@
 // X(트위터) 실시간 트렌드를 trends24.in에서 스크래핑하여 반환
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts"
+import * as cheerio from "https://esm.sh/cheerio@1.0.0-rc.12"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,28 +31,25 @@ serve(async (req) => {
 
     if (res.ok) {
       const html = await res.text()
-      const doc = new DOMParser().parseFromString(html, 'text/html')
+      const $ = cheerio.load(html)
+      const allLinks = $('.trend-link')
+      const seen = new Set<string>()
 
-      if (doc) {
-        // 첫 번째 trend-card(가장 최신 1시간)의 trend-link 요소들 추출
-        const allLinks = doc.querySelectorAll('.trend-link')
-        const seen = new Set<string>()
+      allLinks.each((i, el) => {
+        if (xTrends.length >= 5) return false
 
-        for (let i = 0; i < allLinks.length && xTrends.length < 5; i++) {
-          const el = allLinks[i]
-          const keyword = el.textContent?.trim() || ''
-          if (keyword && !seen.has(keyword)) {
-            seen.add(keyword)
-            const href = el.getAttribute('href') || ''
-            xTrends.push({
-              rank: xTrends.length + 1,
-              keyword: keyword,
-              meta: 'Trending',
-              url: href
-            })
-          }
+        const keyword = $(el).text().trim() || ''
+        if (keyword && !seen.has(keyword)) {
+          seen.add(keyword)
+          const href = $(el).attr('href') || ''
+          xTrends.push({
+            rank: xTrends.length + 1,
+            keyword: keyword,
+            meta: 'Trending',
+            url: href
+          })
         }
-      }
+      })
     } else {
       xErrorMsg = `trends24 fetch error: ${res.status}`
       console.error(xErrorMsg)
@@ -62,22 +59,57 @@ serve(async (req) => {
       xErrorMsg = '트렌드 데이터 파싱 실패'
     }
 
-    // ── Threads 트렌드: 공식 API 부재로 목업 데이터 ──
-    const threadsTrends = [
-      { rank: 1, keyword: '오늘 날씨 미쳤다', meta: '2,041 replies' },
-      { rank: 2, keyword: '스레드 시작', meta: '1,520 replies' },
-      { rank: 3, keyword: '일상 기록용', meta: '980 replies' },
-      { rank: 4, keyword: '오운완', meta: '840 replies' },
-      { rank: 5, keyword: '성수동 맛집', meta: '650 replies' },
-    ]
+    // ── Youtube 트렌드: youtube.trends24.in 스크래핑 ──
+    const ytUrl = 'https://youtube.trends24.in/south-korea'
+    const ytRes = await fetch(ytUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'ko-KR,ko;q=0.9',
+      }
+    })
+
+    let youtubeTrends: any[] = []
+    let ytErrorMsg: string | null = null
+
+    if (ytRes.ok) {
+        const ytHtml = await ytRes.text()
+        const $yt = cheerio.load(ytHtml)
+        const videoCards = $yt('ol[aria-labelledby="group-all"] > li.video-item > .video-card')
+
+        videoCards.slice(0, 5).each((i, el) => {
+            const rankText = $yt(el).find('.vc-counter').text().trim()
+            const rank = parseInt(rankText) || i + 1
+            const atag = $yt(el).find('a.video-link')
+            const href = atag.attr('href') || ''
+            const url = href.startsWith('http') ? href : `https://youtube.com${href}`
+            const vMatch = href.match(/v=([^&]+)/)
+            const videoId = vMatch ? vMatch[1] : ''
+            const thumbnailUrl = videoId ? `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg` : ''
+            
+            const keyword = atag.find('.vc-title').text().trim() || ''
+            const metaRaw = atag.find('.text-slate-500').text().replace(/\s+/g, ' ').trim()
+            const byParts = metaRaw.split(' by ')
+            const meta = byParts.length > 1 ? byParts.slice(1).join(' by ').trim() : metaRaw
+
+            youtubeTrends.push({ rank, keyword, meta, url, thumbnailUrl })
+        })
+    } else {
+        ytErrorMsg = `youtube.trends24 fetch error: ${ytRes.status}`
+        console.error(ytErrorMsg)
+    }
+
+    if (youtubeTrends.length === 0 && !ytErrorMsg) {
+      ytErrorMsg = 'Youtube 트렌드 데이터 파싱 실패'
+    }
 
     // ── 통합 응답 ──
     return new Response(JSON.stringify({
       success: true,
-      apiErrorMsg: xErrorMsg,
+      apiErrorMsg: xErrorMsg || ytErrorMsg,
       data: {
         x: xTrends,
-        threads: threadsTrends
+        youtube: youtubeTrends
       }
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

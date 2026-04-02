@@ -59,26 +59,31 @@ body {
     color: var(--black);
 }
 
-.text-orange {
-    color: var(--orange);
+.text-red {
+    color: #FF0000;
 }
 
 /* 그리드 레이아웃 */
+.grid-2,
 .grid-3 {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
 }
 
 @media (min-width: 768px) {
+    .grid-2,
     .grid-3 {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (min-width: 1024px) {
+    .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .grid-3 {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -115,8 +120,8 @@ body {
 .sub-card {
     padding-top: 16px;
     padding-bottom: 16px;
-    width: fill;
-    height: fit-content;
+    width: 100%;
+    height: 100%;
     background-color: rgba(240, 253, 244, 0.4);
     border: 1px solid var(--border-green-light);
     border-radius: 0.75rem;
@@ -125,8 +130,6 @@ body {
     justify-content: center;
     gap: 16px;
     text-align: center;
-
-
 }
 
 .trend-list {
@@ -398,8 +401,8 @@ body {
     background-color: var(--bg-white);
     border: 1px solid var(--border-green-light);
     border-radius: 0.75rem;
-    height: 260px;
-    /* ✅ 전체 카드 높이 */
+    height: 100%;
+    min-height: 260px;
     overflow: hidden;
 }
 
@@ -407,6 +410,9 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .news-carousel {
@@ -414,17 +420,15 @@ body {
     flex-direction: row;
     align-items: center;
     gap: 6px;
-    width: fit-content;
+    width: 100%;
+    min-width: 0;
 }
 
 .carousel-track-wrapper {
-    width: 160;
-    height: 180;
+    width: 100%;
     overflow: hidden;
     flex: 1;
     min-width: 0;
-    max-width: 160px;
-    /* ✅ 카드 너비 제한 */
 }
 
 .carousel-track {
