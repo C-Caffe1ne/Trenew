@@ -23,6 +23,7 @@ async function renderCardNews() {
             <div class="news-carousel">
                 <button class="carousel-btn carousel-btn-left" onclick="moveCarousel(-1)">&#8249;</button>
                 <div class="carousel-track-wrapper">
+                <h4>Delay +12h</h4>
                     <div class="carousel-track" id="carousel-track">
                         ${newsItems.map(item => {
             const displayCategory = (item.category && item.category.length > 0)
