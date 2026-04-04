@@ -363,10 +363,7 @@ body {
 .time-display {
     font-size: 1rem;
     font-weight: 500;
-}
-
-.time {
-    color: blue;
+    font-color : black;
 }
 
 .namuNow {
