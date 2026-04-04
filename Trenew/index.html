@@ -30,10 +30,17 @@
                 </div>
                 <div>
                     <div class="update-container">
-                        <button class="refresh-btn" onclick="handleRefresh()">새로고침</button>
+                        <button class="refresh-btn" onclick="handleRefresh()">
+                            <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                            새로고침
+                        </button>
                         <br><br>
                         <p class="time-display">
-                            마지막 업데이트 : <span style="color: blue;">(UTC+09:00)</span> <span id="lastUpdateTime">-</span>
+                            마지막 업데이트 : (UTC+09:00)<span id="lastUpdateTime">-</span>
                         </p>
                         <br>
                         <a href="https://arca.live/b/namuhotnow" target="_blank" class="namuNow">
@@ -58,8 +65,14 @@
 
                         // B. 버튼 클릭 시 실행되는 함수
                         function handleRefresh() {
-                            // 브라우저 페이지 새로고침
-                            location.reload();
+                            const icon = document.querySelector('.refresh-icon');
+                            if (icon) {
+                                icon.classList.add('spinning');
+                            }
+                            // 애니메이션이 보인 후 새로고침
+                            setTimeout(() => {
+                                location.reload();
+                            }, 600);
                         }
                     </script>
                 </div>
