@@ -16,6 +16,38 @@ serve(async (req) => {
   }
 
   try {
+    // 요청 바디 파싱 시도 (action 분기를 위해)
+    let reqData: any = {};
+    if (req.method === 'POST') {
+      try {
+        reqData = await req.json();
+      } catch (e) {
+        // body가 비어있는 경우 무시
+      }
+    }
+
+    if (reqData.action === 'exchange') {
+      const { apiKey, date } = reqData;
+      const targetUrl = `https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${apiKey}&searchdate=${date}&data=AP01`;
+      
+      const exRes = await fetch(targetUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json, text/plain, */*',
+          'Accept-Language': 'ko-KR,ko;q=0.9',
+        }
+      });
+      const exText = await exRes.text();
+      let exJson = [];
+      try {
+           exJson = JSON.parse(exText);
+      } catch(e) {}
+      
+      return new Response(JSON.stringify({ success: true, data: exJson }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // ── X(트위터) 트렌드: trends24.in 스크래핑 ──
     const url = 'https://trends24.in/korea/'
     const res = await fetch(url, {

@@ -1,7 +1,6 @@
-/* 기본 변수 세팅 */
+/* 1. 변수 및 초기화 (Variables & Resets) */
 :root {
     --bg-body: #ebfcf0;
-    /* 연한 초록색 배경 */
     --bg-white: #ffffff;
     --bg-green-light: #f0fdf4;
     --border-green: #bbf7d0;
@@ -16,7 +15,6 @@
     --black: #18181b;
 }
 
-/* 초기화 및 공통 스타일 */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -32,12 +30,38 @@ body {
     line-height: 1.5;
 }
 
+/* 2. 레이아웃 (Layout & Grid) */
 .app-container {
     max-width: 1152px;
     margin: 0 auto;
 }
 
-/* 유틸리티 클래스 */
+.grid-2,
+.grid-3 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+
+    .grid-2,
+    .grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* 3. 유틸리티 (Utilities) */
 .mt-6 {
     margin-top: 1.5rem;
 }
@@ -63,31 +87,14 @@ body {
     color: #FF0000;
 }
 
-/* 그리드 레이아웃 */
-.grid-2,
-.grid-3 {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
+.clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-@media (min-width: 768px) {
-    .grid-2,
-    .grid-3 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (min-width: 1024px) {
-    .grid-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .grid-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-/* 공통 카드 스타일 */
+/* 4. 공통 컴포넌트: 카드 (Cards) */
 .card {
     background-color: var(--bg-white);
     border-radius: 1rem;
@@ -102,21 +109,6 @@ body {
     }
 }
 
-/* 상단 네이버 트렌드 섹션 */
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.section-header h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-}
-
-/* 나무위키 하위 분할 카드 */
 .sub-card {
     padding-top: 16px;
     padding-bottom: 16px;
@@ -132,6 +124,90 @@ body {
     text-align: center;
 }
 
+/* 5. 상단 헤더 & 업데이트 컨테이너 (Header & Update Info) */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.update-container {
+    gap: 24px;
+    padding-bottom: 16px;
+}
+
+.refresh-btn {
+    padding-bottom: 16px;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-green-light);
+    background-color: var(--bg-white);
+    color: var(--text-green-dark);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.refresh-icon {
+    transition: transform 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background-color: var(--bg-green-light);
+    border-color: var(--text-green-dark);
+}
+
+.refresh-btn:hover .refresh-icon {
+    transform: rotate(90deg);
+}
+
+.refresh-icon.spinning {
+    animation: spin 0.6s ease-in-out;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.time-display {
+    font-size: 1rem;
+    font-weight: 500;
+    color: black;
+}
+
+.namuNow {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+}
+
+.nowIssue {
+    padding-top: 0;
+    padding-bottom: 36px;
+}
+
+.exchange {
+    padding-top: 0;
+    padding-bottom: 16px;
+}
+
+/* 6. 메인 콘텐츠: 트렌드 리스트 (Trend Lists) */
 .trend-list {
     padding-top: 0;
     list-style: none;
@@ -169,89 +245,7 @@ body {
     text-overflow: ellipsis;
 }
 
-/* 뉴스 카드 */
-.news-card {
-    background-color: var(--bg-white);
-    border: 1px solid var(--border-green-light);
-    border-radius: 0.75rem;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    height: 100%;
-}
-
-.news-card:hover {
-    border-color: #86efac;
-}
-
-.news-image-wrapper {
-    position: relative;
-    width: 100%;
-    height: 130px;
-    /* ✅ 이미지 높이 증가 */
-    flex-shrink: 0;
-    overflow: hidden;
-    border-radius: 6px;
-}
-
-.news-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.news-card:hover .news-image {
-    transform: scale(1.05);
-}
-
-.news-badge {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    font-size: 9px;
-    padding: 2px 4px;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border-radius: 4px;
-}
-
-.news-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    height: auto;
-    /* ✅ 기존 고정 height 제거 */
-    overflow: hidden;
-}
-
-.news-title {
-    font-size: 13px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.news-card:hover .news-title {
-    color: var(--text-green-dark);
-}
-
-.news-desc {
-    font-size: 11px;
-    color: #666;
-    margin: 0;
-}
-
-
-.news-meta {
-    font-size: 10px;
-    color: #aaa;
-}
-
-/* 소셜 미디어 트렌드 카드 */
+/* 7. 하단 콘텐츠: 소셜 미디어 트렌드 (Social Trends) */
 .social-card {
     display: flex;
     flex-direction: column;
@@ -265,6 +259,11 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.social-header h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
 .icon-wrapper {
     padding: 0.5rem;
     border-radius: 0.5rem;
@@ -273,11 +272,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.social-header h2 {
-    font-size: 1.125rem;
-    font-weight: 700;
 }
 
 .social-item {
@@ -315,7 +309,7 @@ body {
     font-weight: 500;
 }
 
-/* Skeleton Loading Animation */
+/* 8. 로딩 스켈레톤 애니메이션 (Skeleton Loading) */
 .skeleton .skeleton-rank,
 .skeleton .skeleton-text {
     background-color: #e5e7eb;
@@ -340,159 +334,4 @@ body {
     100% {
         background-color: #d1d5db;
     }
-}
-
-.refresh-btn {
-    padding-bottom: 16px;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-green-light);
-    background-color: var(--bg-white);
-    color: var(--text-green-dark);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.refresh-icon {
-    transition: transform 0.3s ease;
-}
-
-.refresh-btn:hover .refresh-icon {
-    transform: rotate(90deg);
-}
-
-.refresh-icon.spinning {
-    animation: spin 0.6s ease-in-out;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.refresh-btn:hover {
-    background-color: var(--bg-green-light);
-    border-color: var(--text-green-dark);
-}
-
-.time-display {
-    font-size: 1rem;
-    font-weight: 500;
-    font-color : black;
-}
-
-.namuNow {
-    font-size: 1rem;
-    font-weight: 500;
-    color: rgb(0, 0, 0);
-}
-
-.update-container {
-    gap: 24px;
-    padding-bottom: 16px;
-
-}
-
-.nowIssue {
-    text-align: top;
-    padding-top: 0;
-    padding-bottom: 36px;
-}
-
-.clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* 캐러셀 */
-.card-news-container {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px;
-    cursor: pointer;
-    background-color: var(--bg-white);
-    border: 1px solid var(--border-green-light);
-    border-radius: 0.75rem;
-    height: 100%;
-    min-height: 260px;
-    overflow: hidden;
-}
-
-#news-wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.news-carousel {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-    min-width: 0;
-}
-
-.carousel-track-wrapper {
-    width: 100%;
-    overflow: hidden;
-    flex: 1;
-    min-width: 0;
-}
-
-.carousel-track {
-    display: flex;
-    transition: transform 0.4s ease;
-}
-
-.carousel-track .card-news-container {
-    min-width: 100%;
-}
-
-.carousel-btn {
-    background: none;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
-    cursor: pointer;
-    flex-shrink: 0;
-    line-height: 1;
-    color: #555;
-}
-
-.carousel-btn:hover {
-    background: #f0f0f0;
-}
-
-/* 하단 점 표시 */
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 8px;
-}
-
-.dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #ddd;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.dot.active {
-    background: #555;
 }

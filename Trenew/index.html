@@ -31,7 +31,9 @@
                 <div>
                     <div class="update-container">
                         <button class="refresh-btn" onclick="handleRefresh()">
-                            <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="23 4 23 10 17 10"></polyline>
                                 <polyline points="1 20 1 14 7 14"></polyline>
                                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -130,19 +132,17 @@
                         </div>
                     </div>
 
-                    <!-- 뉴스 카드 -->
-                    <div id="news-wrapper">
-                        <div class="news-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1579532537902-1e50099867b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwbmV3c3xlbnwxfHx8fDE3NzQ1MDg3ODd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                                alt="Technology News" class="news-image">
-                            <div class="news-badge">IT/과학</div>
-                        </div>
-                        <div class="news-content">
-                            <div>
-                                <h3 class="news-title">Headline</h3>
-                                <p class="news-desc">...</p>
-                            </div>
-                            <div class="news-meta">2026. 03. 26 </div>
+                    <!-- 환율 카드 -->
+                    <div id="exchange-wrapper" class="sub-card"
+                        style="display: flex; flex-direction: column; position: relative; overflow: hidden;">
+                        <h3 class="exchange"
+                            style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            국제 환율(KRW)
+                        </h3>
+                        <div class="exchange-content"
+                            style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem 0;">
+                            <div class="skeleton-text" style="width: 60%; height: 3rem; margin-bottom: 1rem;"></div>
+                            <div class="skeleton-text" style="width: 80%; height: 4rem;"></div>
                         </div>
                     </div>
                 </div>
@@ -261,7 +261,7 @@
     </div>
     <script src="namu_api.js"></script>
     <script src="social_api.js"></script>
-    <script type="module" src="news.js"></script>
+    <script src="exchange.js"></script>
 </body>
 
 </html>
