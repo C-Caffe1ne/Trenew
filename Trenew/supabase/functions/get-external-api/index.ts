@@ -29,7 +29,7 @@ serve(async (req) => {
     if (reqData.action === 'exchange') {
       const { apiKey, date } = reqData;
       const targetUrl = `https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${apiKey}&searchdate=${date}&data=AP01`;
-      
+
       const exRes = await fetch(targetUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -40,43 +40,75 @@ serve(async (req) => {
       const exText = await exRes.text();
       let exJson = [];
       try {
-           exJson = JSON.parse(exText);
-      } catch(e) {}
-      
+        exJson = JSON.parse(exText);
+      } catch (e) { }
+
       return new Response(JSON.stringify({ success: true, data: exJson }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
     // ── KOSPI 지수: KRX OPEN API ──
-    const today = new Date()
-    const basDd = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`
     const krxApiKey = 'DE9BBB6FBA284DB0968299ABFDAC74C4F98D60C2'
-    const krxUrl = `https://data-dbg.krx.co.kr/svc/sample/apis/idx/kospi_dd_trd.json?basDd=${basDd}`
-
-    const res = await fetch(krxUrl, {
-      headers: {
-        'AUTH_KEY': krxApiKey,
-      }
-    })
-
     let kospiData: any[] = []
     let kospiErrorMsg: string | null = null
 
-    if (res.ok) {
-      const json = await res.json()
-      const rawData = json.OutBlock_1 || []
-      // 필요한 필드만 추출 후 등락률 기준 내림차순 정렬
-      kospiData = rawData.map((item: any) => ({
-        basDd: item.BAS_DD || '',
-        idxNm: item.IDX_NM || '',
-        clsprcIdx: item.CLSPRC_IDX || '',
-        cmpprevddIdx: item.CMPPREVDD_IDX || '',
-        flucRt: item.FLUC_RT || '',
-      })).sort((a: any, b: any) => parseFloat(b.flucRt) - parseFloat(a.flucRt))
+    // 1. 현재 시간을 무조건 한국 시간(KST, UTC+9)으로 맞춰서 계산
+    const nowUtc = new Date()
+    const kstOffset = 9 * 60 * 60 * 1000
+    const nowKst = new Date(nowUtc.getTime() + kstOffset)
+    
+    // 2. 기준일(마지막 영업일) 정확히 셋팅
+    let targetKst = new Date(nowKst.getTime())
+    const day = targetKst.getDay()
+    const hours = targetKst.getHours()
+
+    if (day === 0) { // 일요일
+      targetKst.setDate(targetKst.getDate() - 2) // 직전 금요일
+    } else if (day === 6) { // 토요일
+      targetKst.setDate(targetKst.getDate() - 1) // 직전 금요일
     } else {
-      kospiErrorMsg = `KRX API fetch error: ${res.status}`
-      console.error(kospiErrorMsg)
+      // 평일 (월~금)
+      if (hours < 9) { // 1-1. 영업시간 전 (09:00 이전) => 어제 마감시간 종가
+        if (day === 1) targetKst.setDate(targetKst.getDate() - 3) // 월요일이면 직전 금요일
+        else targetKst.setDate(targetKst.getDate() - 1) // 화~금이면 전 영업일
+      }
+      // 1-2 & 1-3. 영업시간 중 및 영업마감 이후 => 오늘 날짜 그대로(API가 최신 상태 반영)
+    }
+
+    // 3. 공휴일 방어 로직 (계산된 마지막 영업일이 하필 공휴일/대체공휴일인 경우 데이터가 비어있음 -> 이를 대비해 최대 3회 이전 영업일로 백트래킹)
+    for (let fallback = 0; fallback < 4; fallback++) {
+      const searchDate = new Date(targetKst.getTime())
+      searchDate.setDate(searchDate.getDate() - fallback)
+      
+      // 백트래킹 중 주말에 닿으면 금요일로 한번 더 점프
+      if (searchDate.getDay() === 0) searchDate.setDate(searchDate.getDate() - 2)
+      else if (searchDate.getDay() === 6) searchDate.setDate(searchDate.getDate() - 1)
+
+      const basDd = `${searchDate.getFullYear()}${String(searchDate.getMonth() + 1).padStart(2, '0')}${String(searchDate.getDate()).padStart(2, '0')}`
+      const krxUrl = `https://data-dbg.krx.co.kr/svc/apis/idx/kospi_dd_trd?basDd=${basDd}`
+
+      const res = await fetch(krxUrl, {
+        headers: { 'AUTH_KEY': krxApiKey }
+      })
+
+      if (res.ok) {
+        const json = await res.json()
+        const rawData = json.OutBlock_1 || []
+        if (rawData.length > 0) {
+          kospiData = rawData.map((item: any) => ({
+            basDd: item.BAS_DD || '',
+            idxNm: item.IDX_NM || '',
+            clsprcIdx: item.CLSPRC_IDX || '',
+            cmpprevddIdx: item.CMPPREVDD_IDX || '',
+            flucRt: item.FLUC_RT || '',
+          })).sort((a: any, b: any) => parseFloat(b.flucRt) - parseFloat(a.flucRt))
+          break // 실제 데이터가 존재하는 완벽한 "마지막 영업일"을 찾음!
+        }
+      } else if (fallback === 3) {
+        kospiErrorMsg = `KRX API fetch error: ${res.status}`
+        console.error(kospiErrorMsg)
+      }
     }
 
     if (kospiData.length === 0 && !kospiErrorMsg) {
@@ -97,30 +129,30 @@ serve(async (req) => {
     let ytErrorMsg: string | null = null
 
     if (ytRes.ok) {
-        const ytHtml = await ytRes.text()
-        const $yt = cheerio.load(ytHtml)
-        const videoCards = $yt('ol[aria-labelledby="group-all"] > li.video-item > .video-card')
+      const ytHtml = await ytRes.text()
+      const $yt = cheerio.load(ytHtml)
+      const videoCards = $yt('ol[aria-labelledby="group-all"] > li.video-item > .video-card')
 
-        videoCards.slice(0, 5).each((i, el) => {
-            const rankText = $yt(el).find('.vc-counter').text().trim()
-            const rank = parseInt(rankText) || i + 1
-            const atag = $yt(el).find('a.video-link')
-            const href = atag.attr('href') || ''
-            const url = href.startsWith('http') ? href : `https://youtube.com${href}`
-            const vMatch = href.match(/v=([^&]+)/)
-            const videoId = vMatch ? vMatch[1] : ''
-            const thumbnailUrl = videoId ? `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg` : ''
-            
-            const keyword = atag.find('.vc-title').text().trim() || ''
-            const metaRaw = atag.find('.text-slate-500').text().replace(/\s+/g, ' ').trim()
-            const byParts = metaRaw.split(' by ')
-            const meta = byParts.length > 1 ? byParts.slice(1).join(' by ').trim() : metaRaw
+      videoCards.slice(0, 5).each((i, el) => {
+        const rankText = $yt(el).find('.vc-counter').text().trim()
+        const rank = parseInt(rankText) || i + 1
+        const atag = $yt(el).find('a.video-link')
+        const href = atag.attr('href') || ''
+        const url = href.startsWith('http') ? href : `https://youtube.com${href}`
+        const vMatch = href.match(/v=([^&]+)/)
+        const videoId = vMatch ? vMatch[1] : ''
+        const thumbnailUrl = videoId ? `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg` : ''
 
-            youtubeTrends.push({ rank, keyword, meta, url, thumbnailUrl })
-        })
+        const keyword = atag.find('.vc-title').text().trim() || ''
+        const metaRaw = atag.find('.text-slate-500').text().replace(/\s+/g, ' ').trim()
+        const byParts = metaRaw.split(' by ')
+        const meta = byParts.length > 1 ? byParts.slice(1).join(' by ').trim() : metaRaw
+
+        youtubeTrends.push({ rank, keyword, meta, url, thumbnailUrl })
+      })
     } else {
-        ytErrorMsg = `youtube.trends24 fetch error: ${ytRes.status}`
-        console.error(ytErrorMsg)
+      ytErrorMsg = `youtube.trends24 fetch error: ${ytRes.status}`
+      console.error(ytErrorMsg)
     }
 
     if (youtubeTrends.length === 0 && !ytErrorMsg) {
