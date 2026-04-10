@@ -10,6 +10,9 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 }
 
+const memoryCache = new Map<string, { data: string; expiry: number }>();
+const CACHE_DURATION_MS = 20 * 60 * 1000; // 20 minutes
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -28,24 +31,103 @@ serve(async (req) => {
 
     if (reqData.action === 'exchange') {
       const { apiKey, date } = reqData;
-      const targetUrl = `https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=${apiKey}&searchdate=${date}&data=AP01`;
+      
+      const cacheKey = `exchange-${date}`;
+      const now = Date.now();
+      if (memoryCache.has(cacheKey) && memoryCache.get(cacheKey)!.expiry > now) {
+         return new Response(memoryCache.get(cacheKey)!.data, {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+         });
+      }
 
-      const exRes = await fetch(targetUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'application/json, text/plain, */*',
-          'Accept-Language': 'ko-KR,ko;q=0.9',
-        }
-      });
-      const exText = await exRes.text();
-      let exJson = [];
+      // 등락률 계산을 위해 '어제(직전 영업일)' 날짜를 정확히 계산
+      const yyyy = date.substring(0, 4)
+      const mm = date.substring(4, 6)
+      const dd = date.substring(6, 8)
+      const d = new Date(`${yyyy}-${mm}-${dd}T00:00:00Z`)
+      
+      // 월요일(1)이면 3일 전(금), 일요일(0)이면 2일 전(금), 그 외는 1일 전(어제)
+      if (d.getUTCDay() === 1) d.setDate(d.getDate() - 3)
+      else if (d.getUTCDay() === 0) d.setDate(d.getDate() - 2)
+      else d.setDate(d.getDate() - 1)
+
+      const startDate = `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`
+      
+      // 한국은행 ECOS API (731Y001: 일일 주요국 환율)
+      const targetUrl = `https://ecos.bok.or.kr/api/StatisticSearch/${apiKey}/json/kr/1/100/731Y001/D/${startDate}/${date}`;
+
       try {
-        exJson = JSON.parse(exText);
-      } catch (e) { }
+        const exRes = await fetch(targetUrl);
+        const exJson = await exRes.json();
+        
+        if (exJson && exJson.StatisticSearch && exJson.StatisticSearch.row) {
+          const rows = exJson.StatisticSearch.row;
+          
+          const codeMap: Record<string, string> = {
+            "0000001": "USD",
+            "0000002": "JPY(100)",
+            "0000003": "EUR",
+            "0000012": "GBP",
+            "0000053": "CNY"
+          };
 
-      return new Response(JSON.stringify({ success: true, data: exJson }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+          const grouped: Record<string, any[]> = {};
+          rows.forEach((row: any) => {
+             if (codeMap[row.ITEM_CODE1]) {
+                const cur = codeMap[row.ITEM_CODE1];
+                if (!grouped[cur]) grouped[cur] = [];
+                grouped[cur].push(row);
+             }
+          });
+
+          const mappedData = Object.keys(grouped).map(cur => {
+             // TIME 기준 내림차순 정렬 (최신이 0번 인덱스)
+             const sorted = grouped[cur].sort((a, b) => b.TIME.localeCompare(a.TIME));
+             const current = sorted[0];
+             const previous = sorted.length > 1 ? sorted[1] : current;
+
+             const curRate = parseFloat(current.DATA_VALUE);
+             const prevRate = parseFloat(previous.DATA_VALUE);
+             
+             const change = curRate - prevRate;
+             const changeRate = prevRate !== 0 ? (change / prevRate) * 100 : 0;
+             const dir = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
+
+             return {
+               cur_unit: cur,
+               cur_nm: current.ITEM_NAME1,
+               deal_bas_r: current.DATA_VALUE,
+               change_val: Math.abs(change).toLocaleString('ko-KR', { maximumFractionDigits: 2 }),
+               change_rate: Math.abs(changeRate).toFixed(2),
+               dir: dir
+             };
+          });
+
+          const responseText = JSON.stringify({ success: true, data: mappedData });
+          memoryCache.set(cacheKey, { data: responseText, expiry: now + CACHE_DURATION_MS });
+
+          return new Response(responseText, {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } else {
+           return new Response(JSON.stringify({ success: true, data: [] }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, error: (e as Error).message }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500
+        });
+      }
+    }
+
+    const cacheKeyCombined = 'kospi-youtube';
+    const nowCombined = Date.now();
+    if (memoryCache.has(cacheKeyCombined) && memoryCache.get(cacheKeyCombined)!.expiry > nowCombined) {
+       return new Response(memoryCache.get(cacheKeyCombined)!.data, {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+       });
     }
 
     // ── KOSPI 지수: KRX OPEN API ──
@@ -160,14 +242,18 @@ serve(async (req) => {
     }
 
     // ── 통합 응답 ──
-    return new Response(JSON.stringify({
+    const responseText = JSON.stringify({
       success: true,
       apiErrorMsg: kospiErrorMsg || ytErrorMsg,
       data: {
         kospi: kospiData,
         youtube: youtubeTrends
       }
-    }), {
+    });
+
+    memoryCache.set(cacheKeyCombined, { data: responseText, expiry: nowCombined + CACHE_DURATION_MS });
+
+    return new Response(responseText, {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
 

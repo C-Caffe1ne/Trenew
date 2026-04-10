@@ -1,4 +1,4 @@
-const API_KEY = 'sVIrKI2kS1XiE9CZH9vPPdJOtNAlHlLl';
+const API_KEY = '9PRXNVXGNZ51SLMPUUQ9';
 
 async function fetchExchangeRate() {
     const contentBox = document.querySelector('#exchange-wrapper .exchange-content');
@@ -16,8 +16,8 @@ async function fetchExchangeRate() {
         const SUPABASE_URL = 'https://zjxpmtmuzfjfvswghtbq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqeHBtdG11emZqZnZzd2dodGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1OTIzMTUsImV4cCI6MjA5MDE2ODMxNX0.4LPWUg-m11NayTxQtg_j90iQ7iuKdrXlzwcu6x-y_3o';
 
-        // 대상 통화 목록 (미국 달러, 일본 엔, 유럽 유로, 중국 위안)
-        const targetCurrencies = ["USD", "JPY(100)", "EUR", "CNH"];
+        // 대상 통화 목록 (미달러, 일본엔, 위안, 유로, 파운드)
+        const targetCurrencies = ["USD", "JPY(100)", "CNY", "EUR", "GBP"];
 
         for (let i = 0; i < 5; i++) {
             const dateStr = searchDate.toISOString().slice(0, 10).replace(/-/g, '');
@@ -46,12 +46,20 @@ async function fetchExchangeRate() {
                     if (parsedData.length > 0) {
                         const foundData = parsedData.filter(item => targetCurrencies.includes(item.cur_unit));
                         if (foundData.length > 0) {
-                            // 순서 유지
+                            // 순서 유지 및 TTB, TTS 계산 (한국은행은 ttb, tts 미제공)
                             exchangeData = targetCurrencies.map(cur => {
                                 const matched = foundData.find(item => item.cur_unit === cur);
                                 if (!matched) return null;
+
+                                const baseRate = parseFloat(matched.deal_bas_r.toString().replace(/,/g, ''));
+                                const ttb = (baseRate * 0.99).toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+                                const tts = (baseRate * 1.01).toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+
                                 return {
                                     ...matched,
+                                    deal_bas_r: baseRate.toLocaleString('ko-KR', { maximumFractionDigits: 2 }),
+                                    ttb,
+                                    tts,
                                     date: `${searchDate.getFullYear()}.${String(searchDate.getMonth() + 1).padStart(2, '0')}.${String(searchDate.getDate()).padStart(2, '0')}`
                                 };
                             }).filter(Boolean);
@@ -70,7 +78,7 @@ async function fetchExchangeRate() {
 
         // 실패 시 오픈 API 보조 로직
         if (!exchangeData) {
-            console.warn("한국수출입은행 API 조회 실패. 보조 환율 API로 Fallback 합니다.");
+            console.warn("한국은행 API 조회 실패. 보조 환율 API로 Fallback 합니다.");
             const fallbackRes = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/krw.json');
             if (fallbackRes.ok) {
                 const fallbackData = await fallbackRes.json();
@@ -82,9 +90,10 @@ async function fetchExchangeRate() {
                 
                 const targets = [
                     { ext: "USD", fb: "usd", nm: "미국 달러" },
-                    { ext: "JPY(100)", fb: "jpy", nm: "일본 옌", mult: 100 },
-                    { ext: "EUR", fb: "eur", nm: "유로" },
-                    { ext: "CNH", fb: "cny", nm: "위안화" }
+                    { ext: "JPY(100)", fb: "jpy", nm: "일본 엔", mult: 100 },
+                    { ext: "CNY", fb: "cny", nm: "중국 위안" },
+                    { ext: "EUR", fb: "eur", nm: "유럽 유로" },
+                    { ext: "GBP", fb: "gbp", nm: "영국 파운드" }
                 ];
 
                 for (const t of targets) {
@@ -109,7 +118,8 @@ async function fetchExchangeRate() {
                 if(code === 'USD') return '🇺🇸 미국 달러 (USD)';
                 if(code === 'JPY(100)') return '🇯🇵 일본 엔 (JPY 100)';
                 if(code === 'EUR') return '🇪🇺 유럽 유로 (EUR)';
-                if(code === 'CNH') return '🇨🇳 중국 위안 (CNY)';
+                if(code === 'CNY') return '🇨🇳 중국 위안 (CNY)';
+                if(code === 'GBP') return '🇬🇧 영국 파운드 (GBP)';
                 return code;
             };
 
@@ -122,9 +132,17 @@ async function fetchExchangeRate() {
                             ${exchangeData.map(data => `
                                 <div style="min-width: 100%; padding: 0 0.5rem; box-sizing: border-box; text-align: center;">
                                     <div style="font-size: 0.95rem; font-weight: 600; color: #15803d; margin-bottom: 0.5rem;">${getCurName(data.cur_unit)}</div>
-                                    <div style="font-size: 2.2rem; font-weight: 800; color: #111; letter-spacing: -1px; line-height: 1.2;">
+                                    <div style="font-size: 2.2rem; font-weight: 800; color: #111; letter-spacing: -1px; line-height: 1.2; text-align: center;">
                                         ${data.deal_bas_r} <span style="font-size: 1rem; font-weight: 500; color: #666; vertical-align: baseline;">KRW</span>
                                     </div>
+                                    ${data.dir && data.dir !== 'flat' ? `
+                                    <div style="font-size: 0.95rem; font-weight: 700; text-align: center; margin-top: 6px; color: ${data.dir === 'up' ? '#ef4444' : '#3b82f6'};">
+                                        <span style="font-size: 0.8rem; margin-right: 2px;">${data.dir === 'up' ? '▲' : '▼'}</span>
+                                        ${data.change_val} (${data.dir === 'up' ? '+' : '-'}${data.change_rate}%)
+                                    </div>` : data.dir === 'flat' ? `
+                                    <div style="font-size: 0.95rem; font-weight: 600; text-align: center; margin-top: 6px; color: #64748b;">
+                                        - 0.00 (0.00%)
+                                    </div>` : ''}
                                     <div style="margin-top: 1.2rem; display: flex; gap: 0.5rem; justify-content: center;">
                                         <div style="background: rgba(239, 246, 255, 0.6); padding: 0.7rem; border-radius: 8px; flex: 1; max-width: 130px;">
                                             <span style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 0.1rem;">송금 받을 때</span>
@@ -136,7 +154,7 @@ async function fetchExchangeRate() {
                                         </div>
                                     </div>
                                     <div style="margin-top: 1rem; font-size: 0.75rem; color: #94a3b8;">
-                                        수출입은행 고시 기준 (${data.date})
+                                        한국은행 고시 매매기준율 (${data.date})
                                     </div>
                                 </div>
                             `).join('')}

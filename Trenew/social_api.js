@@ -49,6 +49,13 @@ function renderKospiCarousel(data) {
         return;
     }
 
+    if (data[0] && data[0].basDd) {
+        const d = data[0].basDd; // e.g. "20260409"
+        const formattedDate = `${d.substring(0,4)}.${d.substring(4,6)}.${d.substring(6,8)} 기준`;
+        const dateLabel = document.getElementById('kospi-date-label');
+        if (dateLabel) dateLabel.innerText = formattedDate;
+    }
+
     // 8개씩 페이지 분할
     const pageSize = 8;
     const pages = [];
