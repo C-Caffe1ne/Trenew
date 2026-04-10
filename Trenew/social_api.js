@@ -1,5 +1,5 @@
 // social_api.js
-// Supabase Edge Function(get-external-api)을 호출하여 X 트렌드와 Threads 트렌드를 렌더링
+// Supabase Edge Function(get-external-api)을 호출하여 KOSPI 지수와 YouTube 트렌드를 렌더링
 
 const SUPABASE_URL = 'https://zjxpmtmuzfjfvswghtbq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqeHBtdG11emZqZnZzd2dodGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1OTIzMTUsImV4cCI6MjA5MDE2ODMxNX0.4LPWUg-m11NayTxQtg_j90iQ7iuKdrXlzwcu6x-y_3o';
@@ -25,42 +25,123 @@ async function fetchSocialTrends() {
             return;
         }
 
-        renderXTrends(json.data.x || []);
+        renderKospiCarousel(json.data.kospi || []);
         renderYoutubeTrends(json.data.youtube || []);
     } catch (err) {
         console.error('소셜 트렌드 로딩 실패:', err);
     }
 }
 
-function renderXTrends(trends) {
-    const list = document.getElementById('x-trend-list');
-    if (!list) return;
-    list.innerHTML = '';
+// ── KOSPI 캐러셀 ──
+let kospiCurrentPage = 0;
+let kospiTotalPages = 0;
 
-    if (trends.length === 0) {
-        list.innerHTML = '<li class="social-item"><div class="social-info"><span class="keyword">X 트렌드를 가져올 수 없습니다</span></div></li>';
+function renderKospiCarousel(data) {
+    const track = document.getElementById('kospi-carousel-track');
+    const dotsContainer = document.getElementById('kospi-dots');
+    const prevBtn = document.getElementById('kospi-prev');
+    const nextBtn = document.getElementById('kospi-next');
+    if (!track || !dotsContainer) return;
+
+    if (data.length === 0) {
+        track.innerHTML = '<div class="kospi-page"><p style="text-align:center; color:#9ca3af; padding:2rem;">KOSPI 지수 데이터를 가져올 수 없습니다</p></div>';
+        dotsContainer.innerHTML = '';
         return;
     }
 
-    trends.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'social-item';
-        li.style.cursor = 'pointer';
-        li.innerHTML = `
-            <span class="rank text-blue">${item.rank}</span>
-            <div class="social-info">
-                <span class="keyword">${item.keyword}</span>
-                <span class="meta">${item.meta}</span>
-            </div>
-        `;
-        li.addEventListener('click', () => {
-            const searchUrl = item.url || `https://twitter.com/search?q=${encodeURIComponent(item.keyword)}`;
-            window.open(searchUrl, '_blank');
+    // 8개씩 페이지 분할
+    const pageSize = 8;
+    const pages = [];
+    for (let i = 0; i < data.length; i += pageSize) {
+        pages.push(data.slice(i, i + pageSize));
+    }
+    kospiTotalPages = pages.length;
+    kospiCurrentPage = 0;
+
+    // 트랙에 페이지 삽입
+    track.innerHTML = pages.map((pageData, pageIdx) => {
+        const rows = pageData.map(item => {
+            const flucVal = parseFloat(item.flucRt);
+            const cmpprevVal = parseFloat(item.cmpprevddIdx);
+            let flucClass = 'kospi-neutral';
+            let arrow = '';
+            if (flucVal > 0) { flucClass = 'kospi-up'; arrow = '▲'; }
+            else if (flucVal < 0) { flucClass = 'kospi-down'; arrow = '▼'; }
+
+            let cmpprevClass = 'kospi-neutral';
+            let cmpprevArrow = '';
+            if (cmpprevVal > 0) { cmpprevClass = 'kospi-up'; cmpprevArrow = '▲'; }
+            else if (cmpprevVal < 0) { cmpprevClass = 'kospi-down'; cmpprevArrow = '▼'; }
+
+            return `<tr>
+                <td class="kospi-name">${item.idxNm}</td>
+                <td class="kospi-price">${item.clsprcIdx}</td>
+                <td class="${cmpprevClass}">${cmpprevArrow} ${item.cmpprevddIdx}</td>
+                <td class="${flucClass}">${arrow} ${item.flucRt}%</td>
+            </tr>`;
+        }).join('');
+
+        return `<div class="kospi-page" data-page="${pageIdx}">
+            <table class="kospi-table">
+                <thead>
+                    <tr>
+                        <th>지수명</th>
+                        <th>종가</th>
+                        <th>대비</th>
+                        <th>등락률</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+    }).join('');
+
+    // 점(dot) 인디케이터 생성
+    dotsContainer.innerHTML = pages.map((_, i) =>
+        `<button class="kospi-dot${i === 0 ? ' active' : ''}" data-page="${i}" aria-label="페이지 ${i + 1}"></button>`
+    ).join('');
+
+    // 이벤트 바인딩
+    updateCarouselView();
+
+    prevBtn.onclick = () => {
+        if (kospiCurrentPage > 0) {
+            kospiCurrentPage--;
+            updateCarouselView();
+        }
+    };
+    nextBtn.onclick = () => {
+        if (kospiCurrentPage < kospiTotalPages - 1) {
+            kospiCurrentPage++;
+            updateCarouselView();
+        }
+    };
+    dotsContainer.querySelectorAll('.kospi-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            kospiCurrentPage = parseInt(dot.dataset.page);
+            updateCarouselView();
         });
-        list.appendChild(li);
     });
 }
 
+function updateCarouselView() {
+    const track = document.getElementById('kospi-carousel-track');
+    const dots = document.querySelectorAll('.kospi-dot');
+    const prevBtn = document.getElementById('kospi-prev');
+    const nextBtn = document.getElementById('kospi-next');
+    if (!track) return;
+
+    track.style.transform = `translateX(-${kospiCurrentPage * 100}%)`;
+
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === kospiCurrentPage);
+    });
+
+    if (prevBtn) prevBtn.disabled = kospiCurrentPage === 0;
+    if (nextBtn) nextBtn.disabled = kospiCurrentPage === kospiTotalPages - 1;
+}
+
+// ── YouTube 트렌드 ──
 function renderYoutubeTrends(trends) {
     const list = document.getElementById('youtube-trend-list');
     if (!list) return;

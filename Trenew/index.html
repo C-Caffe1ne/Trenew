@@ -154,42 +154,40 @@
             <!-- 하단 섹션: 소셜 미디어 트렌드 -->
             <section class="grid-2 mt-6">
 
-                <!-- X 트렌드 -->
-                <div class="card social-card">
+                <!-- KOSPI 지수 -->
+                <div class="card social-card kospi-card">
                     <div class="social-header text-blue">
-                        <div class="icon-wrapper">
+                        <div class="icon-wrapper" style="color: #d63031;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
-                                <path
-                                    d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
-                                </path>
+                                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                                <polyline points="16 7 22 7 22 13"></polyline>
                             </svg>
                         </div>
-                        <h2 class="text-black">X 트렌드</h2>
+                        <h2 class="text-black">KOSPI 지수</h2>
                     </div>
-                    <ul class="trend-list" id="x-trend-list">
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:70%"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:85%"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:60%"></div>
-                        </li>
-                        <li class="trend-item skeleton">
-                            <div class="skeleton-rank"></div>
-                            <div class="skeleton-text" style="width:75%"></div>
-                        </li>
-                    </ul>
+                    <div class="kospi-carousel" id="kospi-carousel">
+                        <div class="kospi-carousel-track" id="kospi-carousel-track">
+                            <!-- 캐러셀 페이지가 JS로 삽입됩니다 -->
+                            <div class="kospi-page">
+                                <table class="kospi-table skeleton-table">
+                                    <thead><tr><th>지수명</th><th>종가</th><th>대비</th><th>등락률</th></tr></thead>
+                                    <tbody>
+                                        <tr><td><div class="skeleton-text" style="width:80%"></div></td><td><div class="skeleton-text" style="width:60%"></div></td><td><div class="skeleton-text" style="width:50%"></div></td><td><div class="skeleton-text" style="width:50%"></div></td></tr>
+                                        <tr><td><div class="skeleton-text" style="width:70%"></div></td><td><div class="skeleton-text" style="width:55%"></div></td><td><div class="skeleton-text" style="width:45%"></div></td><td><div class="skeleton-text" style="width:55%"></div></td></tr>
+                                        <tr><td><div class="skeleton-text" style="width:85%"></div></td><td><div class="skeleton-text" style="width:65%"></div></td><td><div class="skeleton-text" style="width:40%"></div></td><td><div class="skeleton-text" style="width:60%"></div></td></tr>
+                                        <tr><td><div class="skeleton-text" style="width:75%"></div></td><td><div class="skeleton-text" style="width:50%"></div></td><td><div class="skeleton-text" style="width:55%"></div></td><td><div class="skeleton-text" style="width:45%"></div></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="kospi-carousel-controls">
+                            <button class="kospi-carousel-btn kospi-prev" id="kospi-prev" aria-label="이전">‹</button>
+                            <div class="kospi-carousel-dots" id="kospi-dots"></div>
+                            <button class="kospi-carousel-btn kospi-next" id="kospi-next" aria-label="다음">›</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- YouTube 트렌드 -->

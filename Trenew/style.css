@@ -335,3 +335,169 @@ body {
         background-color: #d1d5db;
     }
 }
+
+/* 9. KOSPI 캐러셀 (KOSPI Carousel) */
+.kospi-card {
+    overflow: hidden;
+}
+
+.kospi-carousel {
+    position: relative;
+    overflow: hidden;
+}
+
+.kospi-carousel-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.kospi-page {
+    min-width: 100%;
+    flex-shrink: 0;
+    padding: 0 0.25rem;
+}
+
+.kospi-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+.kospi-table thead th {
+    background-color: #f0fdf4;
+    color: var(--text-green-dark);
+    font-weight: 600;
+    padding: 0.625rem 0.5rem;
+    text-align: center;
+    border-bottom: 2px solid var(--border-green);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.kospi-table tbody td {
+    padding: 0.5rem 0.5rem;
+    text-align: center;
+    border-bottom: 1px solid #f3f4f6;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.kospi-table tbody tr:hover td {
+    background-color: rgba(240, 253, 244, 0.6);
+}
+
+.kospi-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.kospi-name {
+    text-align: left !important;
+    font-weight: 600 !important;
+    color: #1f2937;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kospi-price {
+    color: #374151;
+    font-weight: 600 !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.kospi-up {
+    color: #dc2626;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.kospi-down {
+    color: #2563eb;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.kospi-neutral {
+    color: #6b7280;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 캐러셀 컨트롤 */
+.kospi-carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.kospi-carousel-btn {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-green);
+    background: var(--bg-white);
+    color: var(--text-green-dark);
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.kospi-carousel-btn:hover:not(:disabled) {
+    background-color: var(--bg-green-light);
+    border-color: var(--text-green);
+    transform: scale(1.1);
+}
+
+.kospi-carousel-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.kospi-carousel-dots {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.kospi-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background-color: #d1d5db;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s;
+}
+
+.kospi-dot.active {
+    background-color: var(--text-green);
+    width: 20px;
+    border-radius: 4px;
+}
+
+.kospi-dot:hover:not(.active) {
+    background-color: #9ca3af;
+}
+
+/* 스켈레톤 테이블 */
+.skeleton-table tbody td {
+    padding: 0.6rem 0.5rem;
+}
+
+.skeleton-table .skeleton-text {
+    height: 1rem;
+    margin: 0 auto;
+}

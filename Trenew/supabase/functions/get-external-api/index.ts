@@ -1,5 +1,5 @@
 // supabase/functions/get-external-api/index.ts
-// X(트위터) 실시간 트렌드를 trends24.in에서 스크래핑하여 반환
+// KOSPI 지수 데이터(KRX OPEN API) 및 YouTube 트렌드를 반환
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import * as cheerio from "https://esm.sh/cheerio@1.0.0-rc.12"
@@ -48,47 +48,39 @@ serve(async (req) => {
       });
     }
 
-    // ── X(트위터) 트렌드: trends24.in 스크래핑 ──
-    const url = 'https://trends24.in/korea/'
-    const res = await fetch(url, {
+    // ── KOSPI 지수: KRX OPEN API ──
+    const today = new Date()
+    const basDd = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`
+    const krxApiKey = 'DE9BBB6FBA284DB0968299ABFDAC74C4F98D60C2'
+    const krxUrl = `https://data-dbg.krx.co.kr/svc/sample/apis/idx/kospi_dd_trd.json?basDd=${basDd}`
+
+    const res = await fetch(krxUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'ko-KR,ko;q=0.9',
+        'AUTH_KEY': krxApiKey,
       }
     })
 
-    let xTrends: any[] = []
-    let xErrorMsg: string | null = null
+    let kospiData: any[] = []
+    let kospiErrorMsg: string | null = null
 
     if (res.ok) {
-      const html = await res.text()
-      const $ = cheerio.load(html)
-      const allLinks = $('.trend-link')
-      const seen = new Set<string>()
-
-      allLinks.each((i, el) => {
-        if (xTrends.length >= 5) return false
-
-        const keyword = $(el).text().trim() || ''
-        if (keyword && !seen.has(keyword)) {
-          seen.add(keyword)
-          const href = $(el).attr('href') || ''
-          xTrends.push({
-            rank: xTrends.length + 1,
-            keyword: keyword,
-            meta: 'Trending',
-            url: href
-          })
-        }
-      })
+      const json = await res.json()
+      const rawData = json.OutBlock_1 || []
+      // 필요한 필드만 추출 후 등락률 기준 내림차순 정렬
+      kospiData = rawData.map((item: any) => ({
+        basDd: item.BAS_DD || '',
+        idxNm: item.IDX_NM || '',
+        clsprcIdx: item.CLSPRC_IDX || '',
+        cmpprevddIdx: item.CMPPREVDD_IDX || '',
+        flucRt: item.FLUC_RT || '',
+      })).sort((a: any, b: any) => parseFloat(b.flucRt) - parseFloat(a.flucRt))
     } else {
-      xErrorMsg = `trends24 fetch error: ${res.status}`
-      console.error(xErrorMsg)
+      kospiErrorMsg = `KRX API fetch error: ${res.status}`
+      console.error(kospiErrorMsg)
     }
 
-    if (xTrends.length === 0 && !xErrorMsg) {
-      xErrorMsg = '트렌드 데이터 파싱 실패'
+    if (kospiData.length === 0 && !kospiErrorMsg) {
+      kospiErrorMsg = 'KOSPI 지수 데이터를 가져올 수 없습니다'
     }
 
     // ── Youtube 트렌드: youtube.trends24.in 스크래핑 ──
@@ -138,9 +130,9 @@ serve(async (req) => {
     // ── 통합 응답 ──
     return new Response(JSON.stringify({
       success: true,
-      apiErrorMsg: xErrorMsg || ytErrorMsg,
+      apiErrorMsg: kospiErrorMsg || ytErrorMsg,
       data: {
-        x: xTrends,
+        kospi: kospiData,
         youtube: youtubeTrends
       }
     }), {
